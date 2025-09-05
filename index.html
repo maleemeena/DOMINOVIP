@@ -1,0 +1,1137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Calculator</title>
+    <meta charset="UTF-8"> <!-- Add this line for character encoding -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- Add viewport meta tag -->
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-image: url('https://www.lemon8-app.com/seo/image?item_id=7279664133782667778&index=0&sign=91e4757295c9d896775326682bec2ca5'); /* Updated background image URL */
+            background-size: cover; /* Cover the entire background */
+            background-repeat: no-repeat; /* Do not repeat the image */
+            background-attachment: fixed; /* Fix the background position */
+            margin: 0; /* Remove default body margin */
+            padding: 20px;
+            text-align: center;
+            color: #333; /* Adjust text color for better contrast */
+        }
+        .container {
+            background-color: rgba(255, 255, 255, 0.8); /* Add some transparency to the background */
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            display: none; /* Initially hide the container */
+            /* Removed 'inline-block' as it's not needed for centering with margin: 0 auto; */
+            margin: 20px auto; /* Center the container and add top/bottom margin */
+            width: 90%; /* Make container width relative */
+            max-width: 600px; /* Set a max-width for larger screens */
+        }
+        input[type="text"], input[type="number"] { /* Combined styling for text and number input */
+            padding: 10px;
+            margin-bottom: 10px; /* Add margin below input for small screens */
+            border: 2px solid #000080; /* Dark blue border */
+            border-radius: 44px; /* Slightly more rounded corners */
+            width: calc(100% - 22px); /* Make input width relative */
+            box-sizing: border-box; /* Include padding and border in element's total width */
+            font-size: 1.5em; /* Large font size */
+            color: red; /* Red text color */
+            font-weight: bold; /* Bold font weight */
+            text-align: center; /* Center text in input */
+        }
+         select { /* Apply styling to select as well */
+            padding: 10px;
+            margin-bottom: 10px; /* Add margin below input for small screens */
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            width: calc(100% - 22px); /* Make input width relative */
+            box-sizing: border-box; /* Include padding and border in element's total width */
+            margin-right: 10px; /* Add some margin to the right of the select */
+        }
+        button {
+            padding: 10px 15px;
+            background-color: #5cb85c;
+            color: white;
+            border: none;
+            border-radius: 44px; /* Adjusted border-radius for buttons */
+            cursor: pointer;
+            font-size: 1em;
+            width: 100%; /* Make button width relative */
+            margin-top: 10px; /* Add space above the button */
+        }
+        button:hover {
+            background-color: #4cae4c;
+        }
+        #results {
+            margin-top: 20px;
+            text-align: left; /* Align results to the left */
+            /* Removed background image properties */
+            padding: 15px; /* Keep padding */
+            border-radius: 8px; /* Keep border-radius */
+            /* Transparency is inherited from .container */
+        }
+        .result-section {
+            margin-bottom: 15px; /* Space between sections */
+        }
+        .result-numbers {
+            white-space: pre-wrap; /* Preserve whitespace and break lines */
+            font-weight: bold; /* Make numbers bold */
+            color: #000080; /* Make numbers dark blue */
+             /* Add a slight text shadow for better readability on busy backgrounds */
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Style for the first two digits in เลขเด่น */
+        /* This styling is applied via span tags in JS now */
+
+        /* Style for headings */
+        h2, h3 {
+            color: red;
+             /* Add a slight text shadow for better readability on busy backgrounds */
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Media Query for smaller screens */
+        @media (max-width: 600px) {
+            .container {
+                margin-top: 20px;
+                padding: 15px;
+            }
+            input[type="text"], input[type="number"], select {
+                margin-right: 0; /* Remove right margin on small screens */
+                margin-bottom: 10px; /* Ensure margin bottom on small screens */
+            }
+        }
+         #current-datetime {
+            margin-top: 10px;
+            font-size: 0.9em;
+            color: #555;
+        }
+
+        #top-heading {
+            font-size: 2em; /* Larger font size */
+            font-weight: bold; /* Bold */
+            margin-bottom: 20px;
+            color: #39FF14; /* Neon green color */
+            text-shadow: -1px -1px 0 #FFFF00, 1px -1px 0 #FFFF00, -1px 1px 0 #FFFF00, 1px 1px 0 #FFFF00; /* Yellow border effect using text-shadow */
+            font-family: 'Comic Sans MS', cursive, sans-serif; /* Cute font, fallback options */
+        }
+
+        /* Table styles */
+        table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+            background-color: rgba(255, 255, 255, 0.9); /* Slightly more opaque background for table */
+            table-layout: fixed; /* Added to control column widths */
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+            word-wrap: break-word; /* Added to prevent long words from overflowing */
+        }
+
+        th {
+            background-color: #f2f2f2;
+            color: #333;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        /* Define column widths */
+        th:nth-child(1), td:nth-child(1) { /* ชื่อหวย */
+            width: 15%;
+        }
+        th:nth-child(2), td:nth-child(2) { /* เลขเด่น 6 อันดับแรก */
+            width: 18%; /* Adjusted width */
+        }
+        th:nth-child(3), td:nth-child(3) { /* ผลที่ออก */
+            width: 15%; /* Increased width for actual result */
+        }
+        th:nth-child(4), td:nth-child(4) { /* เลขบนล่าง */
+            width: 12%; /* Adjusted width - increased */
+        }
+        th:nth-child(5), td:nth-child(5) { /* สถานะเลขรูด */
+            width: 10%;
+        }
+         th:nth-child(6), td:nth-child(6) { /* สถานะบน */
+            width: 11%; /* Adjusted width */
+        }
+         th:nth-child(7), td:nth-child(7) { /* สถานะล่าง */
+            width: 11%; /* Adjusted width */
+        }
+
+
+        /* Input field for Actual Result */
+        .actual-result-input {
+            width: 100%; /* Increased width to fill more of the cell */
+            padding: 0px; /* Reduced padding */
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            text-align: center; /* Center text in input */
+            /* Ensure no specific styles that might cause dropdown appearance */
+            -webkit-appearance: none; /* Remove default browser styling */
+            -moz-appearance: textfield; /* Remove default browser styling for Firefox number input */
+            appearance: textfield; /* Remove default browser styling */
+            box-sizing: border-box; /* Include padding and border in total width */
+            font-size: 0.4em; /* Even Smaller font size */
+            font-weight: normal; /* Remove bold font weight */
+             /* Added to allow dynamic width based on content */
+            min-width: 90px; /* Minimum width to prevent shrinking too much */
+        }
+         /* Remove arrows from number input */
+        input[type=number]::-webkit-inner-spin-button,
+        input[type=number]::-webkit-outer-spin-button {
+          -webkit-appearance: none;
+          margin: 0;
+        }
+        input[type=number] {
+          -moz-appearance: textfield; /* Firefox */
+        }
+
+
+         /* Status icons */
+        .status-icon {
+            font-size: 1.2em;
+            margin-right: 2px;
+        }
+
+        .checkmark {
+            color: green;
+        }
+
+        .cross {
+            color: red;
+        }
+
+         /* Button styling for Save and Clear */
+        .action-button {
+            padding: 10px 15px;
+            margin-top: 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1em;
+            width: auto; /* Adjust width to content */
+            margin-right: 10px; /* Space between buttons */
+        }
+
+        #saveButton {
+            background-color: #007bff; /* Blue */
+            color: white;
+        }
+
+        #saveButton:hover {
+            background-color: #0056b3;
+        }
+
+        #clearButton {
+            background-color: #dc3545; /* Red */
+            color: white;
+        }
+
+        #clearButton:hover {
+            background-color: #c82333;
+        }
+
+         #downloadButton {
+            background-color: #ffc107; /* Yellow/Orange */
+            color: #212529; /* Dark text */
+         }
+
+         #downloadButton:hover {
+            background-color: #e0a800;
+         }
+
+
+    </style>
+</head>
+<body>
+    <div id="top-heading">DOMINOCACU 2025</div> <!-- Added top heading -->
+    <div class="container">
+        <h2>คำนวณ</h2>
+        <div id="current-datetime"></div> <!-- Added div for date and time -->
+        <select id="lotterySelect">
+            <option value="">เลือกชื่อหวย</option>
+            <option value="สาละวัน VISA">🇱🇦 สาละวัน VISA</option>
+            <option value="ลาวประตูชัย">🇱🇦 ลาวประตูชัย</option>
+            <option value="หลวงพระบาง VISA">🇱🇦 หลวงพระบาง VISA</option>
+            <option value="ลาวสันติภาพ">🇱🇦 ลาวสันติภาพ</option>
+            <option value="เวียงจันทน์ VISA">🇱🇦 เวียงจันทน์ VISA</option>
+            <option value="ประชาชนลาว">🇱🇦 ประชาชนลาว</option>
+            <option value="ลาว VISA">🇱🇦 ลาว VISA</option>
+            <option value="ลาวเช้า">🇱🇦 ลาวเช้า</option>
+            <option value="ฮานอยเช้า">🇻🇳 ฮานอยเช้า</option>
+            <option value="ลาว Extra">🇱🇦 ลาว Extra</option>
+            <option value="ลาวตอนเช้า">🇱🇦 ลาวตอนเช้า</option>
+            <option value="ลาวพัฒนาเช้า">🇱🇦 ลาวพัฒนาเช้า</option>
+            <option value="นิเคิอิ พิเศษ เช้า">นิเคิอิ พิเศษ เช้า</option>
+            <option value="นิคเคิอิ VIP เช้า">🇯🇵 นิคเคิอิ VIP เช้า</option>
+            <option value="นิเคิอิ VISA เช้า">🇯🇵 นิเคิอิ VISA เช้า</option>
+            <option value="ฮานอยอาเซียน">🇻🇳 ฮานอยอาเซียน</option>
+            <option value="นิคเคิอิเช้า">🇯🇵 นิคเคิอิเช้า</option>
+            <option value="จีน VIP เช้า">🇨🇳 จีน VIP เช้า</option>
+            <option value="จีน VISA เช้า">🇨🇳 จีน VISA เช้า</option>
+            <option value="ฮั่งเส็ง VISA เช้า">🇭🇰 ฮั่งเส็ง VISA เช้า</option>
+            <option value="จีนเช้า">🇨🇳 จีนเช้า</option>
+            <option value="ลาวทีวี">🇱🇦 ลาวทีวี</option>
+            <option value="ฮั่งเสง พิเศษ เช้า">ฮั่งเสง พิเศษ เช้า</option>
+            <option value="ฮั่งเส็ง VIP เช้า">🇭🇰 ฮั่งเส็ง VIP เช้า</option>
+            <option value="ฮั่งเส็งเช้า">🇭🇰 ฮั่งเส็งเช้า</option>
+            <option value="ฮานอย HD">🇻🇳 ฮานอย HD</option>
+            <option value="เวียดนาม พิเศษ เช้า">เวียดนาม พิเศษ เช้า</option>
+            <option value="ลาวมั่งคั่ง">🇱🇦 ลาวมั่งคั่ง</option>
+            <option value="ไต้หวัน VIP">🇹🇼 ไต้หวัน VIP</option>
+            <option value="ไต้หวัน พิเศษ">ไต้หวัน พิเศษ</option>
+            <option value="ลาวพัฒนาเช้า VIP">🇱🇦 ลาวพัฒนาเช้า VIP</option>
+            <option value="จีน พิเศษ เช้า">จีน พิเศษ เช้า</option>
+            <option value="ลาวพิเศษรอบเที่ยง">🇱🇦 ลาวพิเศษรอบเที่ยง</option>
+            <option value="ลาวพิเศษ">🇱🇦 ลาวพิเศษ</option>
+            <option value="ฮ่องกง VISA">🇭🇰 ฮ่องกง VISA</option>
+            <option value="ฮานอยสตาร์">🇻🇳 ฮานอยสตาร์</option>
+            <option value="ลาวพัฒนาเที่ยง">🇱🇦 ลาวพัฒนาเที่ยง</option>
+            <option value="เกาหลี พิเศษ">เกาหลี พิเศษ</option>
+            <option value="ลาวสบายดี">🇱🇦 ลาวสบายดี</option>
+            <option value="ไต้หวัน">🇹🇼 ไต้หวัน</option>
+            <option value="เกาหลี VIP">🇰🇷 เกาหลี VIP</option>
+            <option value="นิคเคอิบ่าย">🇯🇵 นิคเคอิบ่าย</option>
+            <option value="นิเคิอิ VISA บ่าย">🇯🇵 นิเคิอิ VISA บ่าย</option>
+            <option value="นิเคิอิ พิเศษ บ่าย">นิเคิอิ พิเศษ บ่าย</option>
+            <option value="นิคเคิอิ VIP บ่าย">🇯🇵 นิคเคิอิ VIP บ่าย</option>
+            <option value="ลาวก้าวหน้า">🇱🇦 ลาวก้าวหน้า</option>
+            <option value="เกาหลี">🇰🇷 เกาหลี</option>
+            <option value="ลาว HD">🇱🇦 ลาว HD</option>
+            <option value="จีนบ่าย">🇨🇳 จีนบ่าย</option>
+            <option value="จีน VISA บ่าย">🇨🇳 จีน VISA บ่าย</option>
+            <option value="จีน พิเศษ บ่าย">จีน พิเศษ บ่าย</option>
+            <option value="ฮั่งเส็ง VISA บ่าย">🇭🇰 ฮั่งเส็ง VISA บ่าย</option>
+            <option value="จีน VIP บ่าย">🇨🇳 จีน VIP บ่าย</option>
+            <option value="ฮานอยทีวี">🇻🇳 ฮานอยทีวี</option>
+            <option value="ลาวเจริญ">🇱🇦 ลาวเจริญ</option>
+            <option value="ฮั่งเส็งบ่าย">🇭🇰 ฮั่งเส็งบ่าย</option>
+            <option value="ฮั่งเส็ง VIP บ่าย">🇭🇰 ฮั่งเส็ง VIP บ่าย</option>
+            <option value="ฮั่งเสง พิเศษ บ่าย">ฮั่งเสง พิเศษ บ่าย</option>
+            <option value="ลาวนครหลวง">🇱🇦 ลาวนครหลวง</option>
+            <option value="ลาวมั่นคง">🇱🇦 ลาวมั่นคง</option>
+            <option value="ลาวสตาร์">🇱🇦 ลาวสตาร์</option>
+            <option value="สิงคโปร์ พิเศษ">สิงคโปร์ พิเศษ</option>
+            <option value="ฮานอย VISA">🇻🇳 ฮานอย VISA</option>
+            <option value="ฮานอยกาชาด">🇻🇳 ฮานอยกาชาด</option>
+            <option value="ฮานอยดานัง">🇻🇳 ฮานอยดานัง</option>
+            <option value="เวียดนาม พิเศษ">เวียดนาม พิเศษ</option>
+            <option value="ลาวร่ำรวย">🇱🇦 ลาวร่ำรวย</option>
+            <option value="ลาวนิยม">🇱🇦 ลาวนิยม</option>
+            <option value="ฮานอยเฉพาะกิจ">🇻🇳 ฮานอยเฉพาะกิจ</option>
+            <option value="เวียดนาม พิเศษ บ่าย">เวียดนาม พิเศษ บ่าย</option>
+            <option value="สิงคโปร์">🇸🇬 สิงคโปร์</option>
+            <option value="ไทยเย็น">🇹🇭 ไทยเย็น</option>
+            <option value="สิงคโปร์ VIP">🇸🇬 สิงคโปร์ VIP</option>
+            <option value="ฮานอยพิเศษ">🇻🇳 ฮานอยพิเศษ</option>
+            <option value="ฮานอยสามัคคี">🇻🇳 ฮานอยสามัคคี</option>
+            <option value="อินเดีย">🇮🇳 อินเดีย</option>
+            <option value="ฮานอยปกติ">🇻🇳 ฮานอยปกติ</option>
+            <option value="เวียดนามปกติ ออนไลน์">🇻🇳 เวียดนามปกติ ออนไลน์</option>
+            <option value="ลาวมงคล">🇱🇦 ลาวมงคล</option>
+            <option value="ลาวซูเปอร์">🇱🇦 ลาวซูเปอร์</option>
+            <option value="ฮานอย VIP">🇻🇳 ฮานอย VIP</option>
+            <option value="เวียดนาม VIP ออนไลน์">🇻🇳 เวียดนาม VIP ออนไลน์</option>
+            <option value="ฮานอยพัฒนา">🇻🇳 ฮานานอยพัฒนา</option>
+            <option value="อียิปต์">🇪🇬 อียิปต์</option>
+            <option value="ลาวสามัคคี">🇱🇦 ลาวสามัคคี</option>
+            <option value="ลาวพัฒนา">🇱🇦 ลาวพัฒนา</option>
+            <option value="ลาวอาเซียน">🇱🇦 ลาวอาเซียน</option>
+            <option value="ฮานอย 4D">🇻🇳 ฮานอย 4D</option>
+            <option value="อังกฤษ VISA">🇬🇧 อังกฤษ VISA</option>
+            <option value="ลาวสามัคคี VIP">🇱🇦 ลาวสามัคคี VIP</option>
+            <option value="ลาว VIP">🇱🇦 ลาว VIP</option>
+            <option value="ลาวรุ่งเรือง">🇱🇦 ลาวรุ่งเรือง</option>
+            <option value="อังกฤษ VIP">🇬🇧 อังกฤษ VIP</option>
+            <option value="ลาวสตาร์ VIP">🇱🇦 ลาวสตาร์ VIP</option>
+            <option value="เยอรมัน VISA">🇩🇪 เยอรมัน VISA</option>
+            <option value="รัสเซีย พิเศษ">รัสเซีย พิเศษ</option>
+            <option value="ฮานอย Extra">🇻🇳 ฮานอย Extra</option>
+            <option value="ฮานอยดึก">🇻🇳 ฮานอยดึก</option>
+            <option value="เยอรมัน VIP">🇩🇪 เยอรมัน VIP</option>
+            <option value="รัสเซีย">🇷🇺 รัสเซีย</option>
+            <option value="เยอรมัน">🇩🇪 เยอรมัน</option>
+            <option value="อังกฤษ">🇬🇧  อังกฤษ</option>
+            <option value="ดาวโจนส์ พิเศษ">ดาวโจนส์ พิเศษ</option>
+            <option value="รัสเซีย VISA">🇷🇺 รัสเซีย VISA</option>
+            <option value="อังกฤษ พิเศษ">อังกฤษ พิเศษ</option>
+            <option value="เยอรมัน พิเศษ">เยอรมัน พิเศษ</option>
+            <option value="ดาวโจนส์VIP พิเศษ">ดาวโจนส์VIP พิเศษ</option>
+            <option value="ลาวกาชาด">ลาวกาชาด</option>
+            <option value="ยูโร">ยูโร</option>
+            <option value="รัสเซีย VIP">รัสเซีย VIP</option>
+            <option value="ดาวโจนส์ VISA">🇺🇸 ดาวโจนส์ VISA</option>
+            <option value="ดาวโจนส์ VIP">ดาวโจนส์ VIP</option>
+            <option value="ดาวโจนส์สตาร์">ดาวโจนส์สตาร์</option>
+            <option value="ดาวโจนส์">ดาวโจนส์</option>
+            <option value="ลาวไอยรา">🇱🇦 ลาวไอยรา</option>
+            <option value="DNA5นาที">DNA5นาที</option>
+            <option value="DNAVIP5นาที">DNAVIP5นาที</option>
+            <option value="DNA15นาที">DNA15นาที</option>
+            <option value="DNAVIP15นาที">DNAVIP15นาที</option>
+            <option value="DNA4ตัว5นาที">DNA4ตัว5นาที</option>
+            <option value="DNA4ตัว15นาที">DNA4ตัว15นาที</option>
+            <option value="ชัดเจน5นาที">ชัดเจน5นาที</option>
+            <option value="ชัดเจนVIP5นาที">ชัดเจนVIP5นาที</option>
+            <option value="L5นาที">L5นาที</option>
+            <option value="LVIP5นาที">LVIP5นาที</option>
+            <option value="หวย5นาที">หวย5นาที</option>
+            <option value="DANGlotto5นาที">DANGlotto5นาที</option>
+            <option value="yeslotto">yeslotto</n>
+            <option value="world5นาที">world5นาที</option>
+            <option value="world15นาที">world15นาที</option>
+            <option value="Movewinbet">Movewinbet</option>
+            <option value="MovewinbetVIP">MovewinbetVIP</option>
+            <option value="THAILOTTO">THAILOTTO</option>
+            <option value="รัฐบาล">รัฐบาล</option>
+            <option value="fabet">fabet</option>
+        </select>
+        <input type="number" id="numberInput" placeholder="Enter number here">
+        <button id="calculateButton">คำนวณ</button>
+        <div id="results">
+            <!-- Removed the explicit result image tag -->
+        </div>
+
+        <!-- Table to display recorded results -->
+        <table>
+            <thead>
+                <tr>
+                    <th>ชื่อหวย</th>
+                    <th>เลขเด่น 6 อันดับแรก</th>
+                    <th>ผลที่ออก</th>
+                    <th>เลขบนล่าง</th> <!-- Added new column header -->
+                    <th>สถานะเลขรูด</th> <!-- Added new column header -->
+                    <th>สถานะบน</th> <!-- Changed column header here -->
+                    <th>สถานะล่าง</th> <!-- Added new column header -->
+                </tr>
+            </thead>
+            <tbody id="recordedResultsBody">
+                <!-- Results will be added here by JavaScript -->
+            </tbody>
+        </table>
+
+        <!-- Save and Clear buttons -->
+        <button id="saveButton" class="action-button">บันทึกผล (Save)</button>
+        <button id="clearButton" class="action-button">ล้างข้อมูล (Clear)</button>
+        <button id="downloadButton" class="action-button">ดาวน์โหลดบันทึก (Download)</button>
+
+    </div>
+
+    <script>
+        // Simple password check
+        const correctPassword = "DOMINO1988"; // <--- เปลี่ยน your_password เป็นรหัสผ่านที่คุณต้องการ
+
+        let enteredPassword = prompt("Please enter the password to access the calculator:");
+
+        if (enteredPassword === correctPassword) {
+            document.querySelector('.container').style.display = 'inline-block'; // Show the container if password is correct
+        } else {
+            alert("Incorrect password!");
+        }
+
+        // Global array to store recorded results
+        let recordedResults = []; // Changed to let to allow reassignment
+
+        // Function to load data from localStorage on page load
+        function loadRecordedResults() {
+            try {
+                const savedData = localStorage.getItem('lotteryResults');
+                if (savedData) {
+                    recordedResults = JSON.parse(savedData);
+                    displayRecordedResults(); // Display the loaded data
+                }
+            } catch (e) {
+                console.error("Error loading data from localStorage:", e);
+                // alert("Error loading saved data."); // Removed alert to avoid multiple popups
+            }
+        }
+
+        // Load data when the page finishes loading
+        window.addEventListener('load', loadRecordedResults);
+
+
+        document.getElementById('calculateButton').addEventListener('click', function() {
+            const lotterySelect = document.getElementById('lotterySelect');
+            const selectedLottery = lotterySelect.value;
+            const numberInput = document.getElementById('numberInput');
+            const resultsDiv = document.getElementById('results');
+            // Removed the resultImage variable as the tag is removed from HTML
+            const number = parseFloat(numberInput.value);
+
+            resultsDiv.innerHTML = ''; // Clear previous results
+
+            if (isNaN(number)) {
+                resultsDiv.innerHTML += "<p>Please enter a valid number.</p>";
+                // Removed hiding the image as it's removed
+                return;
+            }
+
+            // Calculations
+            const powerOf3 = Math.pow(number, 3);
+            const sqrtOfNumber = Math.sqrt(number);
+            const cbrtOfNumber = Math.cbrt(number);
+            const multiplyByPi = number * 3.14;
+            const add100MultiplyBy2 = (number + 100) * 2;
+            const powerOf0_5 = Math.pow(number, 0.5); // Equivalent to Math.sqrt(number)
+            const rootOf1_76982 = Math.pow(number, 1 / 1.76982);
+
+            // Store results with keys for easier iteration
+            const calculationResults = {
+                'Power of 3': powerOf3,
+                'Square Root': sqrtOfNumber,
+                'Cubic Root': cbrtOfNumber,
+                'Multiply by Pi': multiplyByPi,
+                'Add 100 Multiply by 2': add100MultiplyBy2,
+                'Power of 0.5': powerOf0_5,
+                'Root of 1.76982': rootOf1_76982
+            };
+
+            // Extract all digits from all results for individual digit frequency
+            const allDigits = [];
+            for (const key in calculationResults) {
+                const resultString = String(calculationResults[key]);
+                for (let i = 0; i < resultString.length; i++) {
+                    const char = resultString[i];
+                    if (char >= '0' && char <= '9') {
+                        allDigits.push(parseInt(char));
+                    }
+                }
+            }
+
+            // Calculate individual digit frequency
+            const digitFrequency = {};
+            for (let i = 0; i < allDigits.length; i++) {
+                const digit = allDigits[i];
+                if (digitFrequency[digit]) {
+                    digitFrequency[digit]++;
+                } else {
+                    digitFrequency[digit] = 1;
+                }
+            }
+
+            // Convert frequency object to array, sort, and get top 6 digits (values)
+            const sortedDigits = Object.entries(digitFrequency).sort((a, b) => b[1] - a[1]);
+            const top6DigitsValue = sortedDigits.slice(0, 6).map(item => item[0]);
+
+            // Generate consecutive combinations from each calculation result
+            const allTwoDigitConsecutiveCombinations = [];
+            const allThreeDigitConsecutiveCombinations = [];
+            const allFourDigitConsecutiveCombinations = [];
+
+            for (const key in calculationResults) {
+                const resultString = String(calculationResults[key]).replace('.', ''); // Remove decimal for combination generation
+                const digits = resultString.split('').map(Number).filter(digit => !isNaN(digit)); // Get digits as numbers
+
+                // Generate 2-digit consecutive combinations
+                for (let i = 0; i < digits.length - 1; i++) {
+                    const combination = String(digits[i]) + String(digits[i + 1]);
+                    allTwoDigitConsecutiveCombinations.push(combination);
+                }
+
+                // Generate 3-digit consecutive combinations
+                for (let i = 0; i < digits.length - 2; i++) {
+                    const combination = String(digits[i]) + String(digits[i + 1]) + String(digits[i + 2]);
+                    allThreeDigitConsecutiveCombinations.push(combination);
+                }
+
+                // Generate 4-digit consecutive combinations
+                for (let i = 0; i < digits.length - 3; i++) {
+                    const combination = String(digits[i]) + String(digits[i + 1]) + String(digits[i + 2]) + String(digits[i + 3]);
+                    allFourDigitConsecutiveCombinations.push(combination);
+                }
+            }
+
+            // Calculate frequency of consecutive combinations (modified for 3 and 4 digits)
+            const twoDigitFreq = {};
+            allTwoDigitConsecutiveCombinations.forEach(combo => {
+                twoDigitFreq[combo] = (twoDigitFreq[combo] || 0) + 1;
+            });
+
+            const threeDigitFreq = {};
+            allThreeDigitConsecutiveCombinations.forEach(combo => {
+                 // Sort digits for key
+                const sortedCombo = combo.split('').sort().join('');
+                if (!threeDigitFreq[sortedCombo]) {
+                    threeDigitFreq[sortedCombo] = { count: 0, originals: [] };
+                }
+                threeDigitFreq[sortedCombo].count++;
+                threeDigitFreq[sortedCombo].originals.push(combo);
+            });
+
+            const fourDigitFreq = {};
+            allFourDigitConsecutiveCombinations.forEach(combo => {
+                // Sort digits for key
+                const sortedCombo = combo.split('').sort().join('');
+                 if (!fourDigitFreq[sortedCombo]) {
+                    fourDigitFreq[sortedCombo] = { count: 0, originals: [] };
+                }
+                fourDigitFreq[sortedCombo].count++;
+                fourDigitFreq[sortedCombo].originals.push(combo);
+            });
+
+            // Get top 10 (or 15 for 3-digit and 4-digit) frequent consecutive combinations
+            const top10TwoDigit = Object.entries(twoDigitFreq).sort((a, b) => b[1] - a[1]).slice(0, 10).map(item => item[0]);
+
+            const top15ThreeDigitEntries = Object.entries(threeDigitFreq).sort((a, b) => b[1].count - a[1].count).slice(0, 15);
+             // Extract one original combination for display
+            const top15ThreeDigit = top15ThreeDigitEntries.map(entry => entry[1].originals[0]);
+
+            const top15FourDigitEntries = Object.entries(fourDigitFreq).sort((a, b) => b[1].count - a[1].count).slice(0, 15);
+             // Extract one original combination for display
+            const top15FourDigit = top15FourDigitEntries.map(entry => entry[1].originals[0]);
+
+            // Build formatted strings for display and copy-paste
+
+            // Top 6 individual digits
+            let top6DigitsString = "";
+            if (top6DigitsValue.length > 0) {
+                 top6DigitsValue.forEach((digit, index) => {
+                    let styledDigit = digit;
+                     // Apply styling for the first two digits using span
+                    if (index < 2) {
+                         styledDigit = `<span style="font-size: 1.5em; color: red; font-weight: bold;">${digit}</span>`;
+                    }
+                    top6DigitsString += styledDigit + ' ';
+                });
+                top6DigitsString = top6DigitsString.trim(); // Remove trailing space
+            } else {
+                 top6DigitsString = "No top 6 digits found.";
+            }
+
+            // Top 10 2-digit consecutive combinations
+            let twoDigitString = "";
+            if (top10TwoDigit.length > 0) {
+                 top10TwoDigit.forEach((combination, index) => {
+                    twoDigitString += combination.padStart(2, '0') + ' ';
+                    if ((index + 1) % 5 === 0) {
+                        twoDigitString += '\n'; // Add line break
+                    }
+                });
+                 twoDigitString = twoDigitString.trim(); // Remove trailing space/newline
+            } else {
+                 twoDigitString = "No 2-digit combinations generated.";
+            }
+
+            // Top 15 3-digit consecutive combinations
+            let threeDigitString = "";
+            if (top15ThreeDigit.length > 0) {
+                 top15ThreeDigit.forEach((combination, index) => {
+                    threeDigitString += combination.padStart(3, '0') + ' ';
+                    if ((index + 1) % 5 === 0) {
+                        threeDigitString += '\n'; // Add line break
+                    }
+                });
+                 threeDigitString = threeDigitString.trim(); // Remove trailing space/newline
+            } else {
+                 threeDigitString = "No 3-digit combinations generated.";
+            }
+
+            // Top 15 4-digit consecutive combinations conditionally
+             if (selectedLottery.includes("ลาว") || selectedLottery.includes("4ตัว")) {
+                 let fourDigitString = "";
+                 if (top15FourDigit.length > 0) {
+                      top15FourDigit.forEach((combination, index) => {
+                         fourDigitString += combination.padStart(4, '0') + ' ';
+                         if ((index + 1) % 5 === 0) {
+                             fourDigitString += '\n'; // Add line break
+                         }
+                     });
+                     fourDigitString = fourDigitString.trim(); // Remove trailing space/newline
+                 } else {
+                      fourDigitString = "No 4-digit combinations generated.";
+                 }
+                const fourDigitDiv = document.createElement('div');
+                fourDigitDiv.classList.add('result-section');
+                fourDigitDiv.innerHTML += "<h3>เลขเด่น4ตัว: (15 อันดับแรก)</h3>"; // Updated heading
+                const fourDigitPre = document.createElement('pre');
+                fourDigitPre.classList.add('result-numbers');
+                fourDigitPre.textContent = fourDigitString;
+                fourDigitDiv.appendChild(fourDigitPre);
+                resultsDiv.appendChild(fourDigitDiv);
+             }
+
+
+            // Display selected lottery name
+            resultsDiv.innerHTML += "<div class='result-section'><h3>ชื่อหวยที่เลือก: " + selectedLottery + "</h3></div>";
+
+            // Display the top 6 individual digits
+            const top6Div = document.createElement('div');
+            top6Div.classList.add('result-section');
+            top6Div.innerHTML += "<h3>เลขเด่น: (6 อันดับแรก)</h3>"; // Updated heading
+            const top6Pre = document.createElement('pre');
+            top6Pre.classList.add('result-numbers');
+             // Use innerHTML for top6DigitsString to render the span tags for styling
+            top6Pre.innerHTML = top6DigitsString;
+            top6Div.appendChild(top6Pre);
+            resultsDiv.appendChild(top6Div);
+
+            // Display top 10 2-digit consecutive combinations
+            const twoDigitDiv = document.createElement('div');
+            twoDigitDiv.classList.add('result-section');
+            twoDigitDiv.innerHTML += "<h3>เลขเด่น2ตัว: (10 อันดับแรก)</h3>"; // Updated heading
+            const twoDigitPre = document.createElement('pre');
+            twoDigitPre.classList.add('result-numbers');
+            twoDigitPre.textContent = twoDigitString;
+            twoDigitDiv.appendChild(twoDigitPre);
+            resultsDiv.appendChild(twoDigitDiv);
+
+            // Display top 15 3-digit consecutive combinations
+            const threeDigitDiv = document.createElement('div');
+            threeDigitDiv.classList.add('result-section');
+            threeDigitDiv.innerHTML += "<h3>เลขเด่น3ตัว: (15 อันดับแรก)</h3>"; // Updated heading
+            const threeDigitPre = document.createElement('pre');
+            threeDigitPre.classList.add('result-numbers');
+            threeDigitPre.textContent = threeDigitString;
+            threeDigitDiv.appendChild(threeDigitPre);
+            resultsDiv.appendChild(threeDigitDiv);
+
+
+            // Store selected lottery name and top 6 digits
+            const newResult = {
+                lotteryName: selectedLottery,
+                luckyNumbers: top6DigitsValue // Store the array of numbers
+            };
+            // Check if a result for this lottery and input number already exists
+            const existingIndex = recordedResults.findIndex(result =>
+                result.lotteryName === selectedLottery &&
+                JSON.stringify(result.luckyNumbers) === JSON.stringify(top6DigitsValue) // Compare lucky numbers as well
+            );
+
+            if (existingIndex === -1) {
+                // If no existing result, add the new one
+                recordedResults.push(newResult);
+            } else {
+                // If an existing result is found, you might want to update it
+                // For now, we'll just not add a duplicate entry
+                 console.log("Result for this lottery and number already exists.");
+            }
+
+
+            // Call function to display recorded results
+            displayRecordedResults();
+
+
+            // Show the image after displaying results
+            // Removed appending the image again as the tag is removed
+        });
+
+        // Function to display current date and time
+        function displayDateTime() {
+            const now = new Date();
+            const options = { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' };
+            const formattedDateTime = now.toLocaleDateString('th-TH', options);
+            document.getElementById('current-datetime').textContent = "Current Date and Time: " + formattedDateTime;
+        }
+
+        // Display date and time on page load and update every second
+        displayDateTime();
+        setInterval(displayDateTime, 1000);
+
+         // Function to display recorded results
+        function displayRecordedResults() {
+            const tbody = document.getElementById('recordedResultsBody');
+            tbody.innerHTML = ''; // Clear existing rows
+
+            recordedResults.forEach((result, index) => {
+                const row = tbody.insertRow();
+
+                // Cell for Lottery Name
+                const cellLottery = row.insertCell(0);
+                cellLottery.textContent = result.lotteryName;
+
+                // Cell for Top 6 Lucky Numbers
+                const cellLuckyNumbers = row.insertCell(1);
+                let luckyNumbersHTML = '';
+                if (result.luckyNumbers && result.luckyNumbers.length > 0) {
+                    result.luckyNumbers.forEach((digit, digitIndex) => {
+                        if (digitIndex < 2) {
+                            luckyNumbersHTML += `<span style="font-size: 1.5em; color: red; font-weight: bold;">${digit}</span> `;
+                        } else {
+                            luckyNumbersHTML += `${digit} `;
+                        }
+                    });
+                    cellLuckyNumbers.innerHTML = luckyNumbersHTML.trim();
+                } else {
+                    cellLuckyNumbers.textContent = 'N/A';
+                }
+
+
+                // Cell for Actual Result Input
+                const cellActualResult = row.insertCell(2);
+                const inputActual = document.createElement('input');
+                inputActual.type = 'text'; // Changed input type to text
+                inputActual.classList.add('actual-result-input');
+                 // Populate the input with saved actual result if available
+                inputActual.value = result.actualResult || '';
+                 // Add an event listener to this input to update data and status
+                inputActual.addEventListener('input', function() {
+                     // Update the actualResult in the recordedResults array
+                    recordedResults[index].actualResult = this.value;
+                    // Update all status columns
+                    updateStatusLehRoot(index, this.value); // Update for "สถานะเลขรูด"
+                    updateStatusBon(index, this.value); // Update for "สถานะบน"
+                    updateStatusLang(index, this.value); // Update for "สถานะล่าง"
+                     // Also update the เลขบนล่าง column when input changes
+                    const topBottomCell = row.cells[3]; // Correctly reference the เลขบนล่าง cell
+                     if (this.value && String(this.value).length >= 4) {
+                        topBottomCell.textContent = String(this.value).slice(-4).split('').join(' ');
+                    } else {
+                        topBottomCell.textContent = '';
+                    }
+
+                    // Adjust input width based on content
+                    adjustInputWidth(this);
+
+                });
+
+                 cellActualResult.appendChild(inputActual);
+
+                 // Adjust initial width on load
+                adjustInputWidth(inputActual);
+
+
+                 // Cell for เลขบนล่าง (Top/Bottom Numbers)
+                const cellTopBottom = row.insertCell(3);
+                // Extract and display the last 4 digits as individual numbers with spaces
+                if (result.actualResult && String(result.actualResult).length >= 4) {
+                    cellTopBottom.textContent = String(result.actualResult).slice(-4).split('').join(' ');
+                } else {
+                    cellTopBottom.textContent = '';
+                }
+
+                // Cell for สถานะเลขรูด (Status for "เลขรูด")
+                const cellStatusLehRoot = row.insertCell(4);
+                // Removed ID as we can reference cells by index
+                // cellStatusLehRoot.id = `status-leh-root-cell-${index}`; // Give the cell an ID for easy updating
+                 // Display the initial status if actualResult is available
+                 if (result.actualResult) {
+                      updateStatusLehRoot(index, result.actualResult);
+                 }
+
+
+                // Cell for สถานะบน (New Status Column)
+                const cellStatusBon = row.insertCell(5);
+                 // Removed ID as we can reference cells by index
+                // cellStatusBon.id = `status-bon-cell-${index}`; // Give the cell an ID for easy updating
+                 // Display the initial status if actualResult is available
+                 if (result.actualResult) {
+                      updateStatusBon(index, result.actualResult);
+                 }
+
+                // Cell for สถานะล่าง (New Status Column)
+                const cellStatusLang = row.insertCell(6);
+                 // Removed ID as we can reference cells by index
+                // cellStatusLang.id = `status-lang-cell-${index}`; // Give the cell an ID for easy updating
+                 // Display the initial status if actualResult is available
+                 if (result.actualResult) {
+                      updateStatusLang(index, result.actualResult);
+                 }
+
+            });
+        }
+
+        // Function to adjust input width based on content
+        function adjustInputWidth(inputElement) {
+             // Create a temporary span to measure the text width
+            const tempSpan = document.createElement('span');
+            tempSpan.style.visibility = 'hidden';
+            tempSpan.style.position = 'absolute';
+            tempSpan.style.whiteSpace = 'pre'; // Preserve spaces
+            // Copy relevant font styles from the input
+            tempSpan.style.fontFamily = getComputedStyle(inputElement).fontFamily;
+            tempSpan.style.fontSize = getComputedStyle(inputElement).fontSize;
+            tempSpan.style.fontWeight = getComputedStyle(inputElement).fontWeight;
+             // Set the text content of the span to the input value
+            tempSpan.textContent = inputElement.value;
+
+            document.body.appendChild(tempSpan);
+
+            // Set the input width based on the span width, add a little extra space
+            // Use clientWidth of the parent cell as a max width
+            // Check if parentElement is not null before accessing clientWidth
+            const parentCellWidth = inputElement.parentElement ? inputElement.parentElement.clientWidth : 0;
+            const newWidth = Math.min(tempSpan.clientWidth + 5, parentCellWidth); // Add 5px padding and cap at cell width
+
+            inputElement.style.width = newWidth + 'px';
+
+
+            document.body.removeChild(tempSpan);
+        }
+
+
+        // Function to update "สถานะเลขรูด" status (comparing last 4 digits of actual result with the first 2 lucky numbers)
+        function updateStatusLehRoot(rowIndex, actualResult) {
+             // Reference cell by index instead of ID
+            const statusLehRootCell = document.getElementById('recordedResultsBody').rows[rowIndex].cells[4];
+            // Check if the element exists before setting innerHTML
+            if (!statusLehRootCell) {
+                 console.error(`Element for สถานะเลขรูด at row ${rowIndex} not found.`);
+                 return; // Exit the function if the element is not found
+            }
+
+            statusLehRootCell.innerHTML = ''; // Clear previous status
+
+            // Ensure actualResult is treated as a string and has at least 4 digits
+            const actualResultString = String(actualResult);
+            if (actualResultString.length < 4) {
+                 // If less than 4 digits, display nothing
+                 // recordedResults[rowIndex].statusLehRoot = ''; // Might need to store this status too
+                 statusLehRootCell.innerHTML = '';
+                 return; // Do not perform comparison yet
+            }
+
+            // Get the last 4 digits of the actual result as an array of strings
+            const actualResultLast4Digits = actualResultString.slice(-4).split('');
+
+            // Get the first 2 lucky numbers for this row (as strings)
+            const luckyNumbers = recordedResults[rowIndex].luckyNumbers;
+            const firstTwoLuckyNumbers = luckyNumbers.slice(0, 2).map(String); // Get first 2 and convert to strings
+
+            let matchFound = false;
+
+            // Check if any of the last 4 digits of the actual result match either of the first 2 lucky numbers
+            for (let i = 0; i < actualResultLast4Digits.length; i++) {
+                const digit = actualResultLast4Digits[i];
+
+                if (firstTwoLuckyNumbers.includes(digit)) {
+                    matchFound = true;
+                    break; // Found a match, no need to check further
+                }
+            }
+
+            // Display status based on matchFound
+            let statusHTML = '';
+            if (matchFound) {
+                 statusHTML = '<span class="status-icon checkmark">&#x2714;</span>'; // Green checkmark
+            } else {
+                 statusHTML = '<span class="status-icon cross">&#x2718;</span>'; // Red cross
+            }
+            statusLehRootCell.innerHTML = statusHTML;
+             // You might want to store this status in recordedResults too
+            // recordedResults[rowIndex].statusLehRoot = statusHTML;
+
+        }
+
+         // Function to update "สถานะบน" status (comparing first 2 digits of เลขบนล่าง with เลขเด่น 6 อันดับแรก)
+        function updateStatusBon(rowIndex, actualResult) {
+             // Reference cell by index instead of ID
+            const statusBonCell = document.getElementById('recordedResultsBody').rows[rowIndex].cells[5];
+             // Check if the element exists before setting innerHTML
+            if (!statusBonCell) {
+                 console.error(`Element for สถานะบน at row ${rowIndex} not found.`);
+                 return; // Exit the function if the element is not found
+            }
+            statusBonCell.innerHTML = ''; // Clear previous status
+
+            // Ensure actualResult is treated as a string and has at least 4 digits for เลขบนล่าง
+            const actualResultString = String(actualResult);
+            if (actualResultString.length < 4) {
+                 statusBonCell.innerHTML = '<span class="status-icon cross">&#x2718;</span>'; // Show cross if not enough digits for เลขบนล่าง
+                 return;
+            }
+
+            // Get the first 2 digits of the last 4 digits (เลขบนล่าง)
+            const topTwoDigitsOfLast4 = actualResultString.slice(-4).slice(0, 2).split('').map(String);
+
+            // Get the lucky numbers for this row (as strings)
+            const luckyNumbers = recordedResults[rowIndex].luckyNumbers.map(String);
+
+            let firstDigitMatch = false;
+            let secondDigitMatch = false;
+
+            // Check if the first digit of เลขบนล่าง is in the lucky numbers
+            if (topTwoDigitsOfLast4.length > 0 && luckyNumbers.includes(topTwoDigitsOfLast4[0])) {
+                firstDigitMatch = true;
+            }
+
+            // Check if the second digit of เลขบนล่าง is in the lucky numbers
+            if (topTwoDigitsOfLast4.length > 1 && luckyNumbers.includes(topTwoDigitsOfLast4[1])) {
+                secondDigitMatch = true;
+            }
+
+            // Display status based on matches
+            let statusHTML = '';
+            if (firstDigitMatch && secondDigitMatch) {
+                 statusHTML = '<span class="status-icon checkmark">&#x2714;&#x2714;</span>'; // Two checkmarks for both matching
+            } else {
+                 statusHTML = '<span class="status-icon cross">&#x2718;</span>'; // One cross otherwise
+            }
+            statusBonCell.innerHTML = statusHTML;
+             // You might want to store this status in recordedResults too
+            // recordedResults[rowIndex].statusBon = statusHTML;
+
+        }
+
+         // Function to update "สถานะล่าง" status (comparing last 2 digits of เลขบนล่าง with เลขเด่น 6 อันดับแรก)
+        function updateStatusLang(rowIndex, actualResult) {
+             // Reference cell by index instead of ID
+            const statusLangCell = document.getElementById('recordedResultsBody').rows[rowIndex].cells[6];
+             // Check if the element exists before setting innerHTML
+            if (!statusLangCell) {
+                 console.error(`Element for สถานะล่าง at row ${rowIndex} not found.`);
+                 return; // Exit the function if the element is not found
+            }
+            statusLangCell.innerHTML = ''; // Clear previous status
+
+            // Ensure actualResult is treated as a string and has at least 4 digits for เลขบนล่าง
+            const actualResultString = String(actualResult);
+            if (actualResultString.length < 4) {
+                 statusLangCell.innerHTML = '<span class="status-icon cross">&#x2718;</span>'; // Show cross if not enough digits for เลขบนล่าง
+                 return;
+            }
+
+            // Get the last 2 digits of the last 4 digits (เลขบนล่าง)
+            const bottomTwoDigitsOfLast4 = actualResultString.slice(-2).split('').map(String);
+
+            // Get the lucky numbers for this row (as strings)
+            const luckyNumbers = recordedResults[rowIndex].luckyNumbers.map(String);
+
+            let firstDigitMatch = false;
+            let secondDigitMatch = false;
+
+            // Check if the first digit of the bottom 2 digits is in the lucky numbers
+            if (bottomTwoDigitsOfLast4.length > 0 && luckyNumbers.includes(bottomTwoDigitsOfLast4[0])) {
+                firstDigitMatch = true;
+            }
+
+            // Check if the second digit of the bottom 2 digits is in the lucky numbers
+            if (bottomTwoDigitsOfLast4.length > 1 && luckyNumbers.includes(bottomTwoDigitsOfLast4[1])) {
+                secondDigitMatch = true;
+            }
+
+            // Display status based on matches
+            let statusHTML = '';
+            if (firstDigitMatch && secondDigitMatch) {
+                 statusHTML = '<span class="status-icon checkmark">&#x2714;&#x2714;</span>'; // Two checkmarks for both matching
+            } else {
+                 statusHTML = '<span class="status-icon cross">&#x2718;</span>'; // One cross otherwise
+            }
+            statusLangCell.innerHTML = statusHTML;
+             // You might want to store this status in recordedResults too
+            // recordedResults[rowIndex].statusLang = statusHTML;
+
+        }
+
+
+        // Add event listener for the Save button
+        document.getElementById('saveButton').addEventListener('click', function() {
+            try {
+                // Convert the recordedResults array to a JSON string
+                const jsonData = JSON.stringify(recordedResults);
+                // Save the JSON string to localStorage
+                localStorage.setItem('lotteryResults', jsonData);
+                // Provide feedback to the user
+                alert('Results saved to local storage!');
+            } catch (e) {
+                console.error("Error saving data to localStorage:", e);
+                alert("Error saving data. Local storage might be full or unavailable.");
+            }
+        });
+
+        // Add event listener for the Clear button
+        document.getElementById('clearButton').addEventListener('click', function() {
+            // Show a confirmation dialog
+            const confirmed = confirm("Are you sure you want to clear all recorded results? This action cannot be undone.");
+
+            if (confirmed) {
+                try {
+                    // Clear the recordedResults array
+                    recordedResults.length = 0;
+                    // Remove the data from localStorage
+                    localStorage.removeItem('lotteryResults');
+                    // Clear the displayed table
+                    displayRecordedResults();
+                    // Provide feedback to the user
+                    alert('All recorded results cleared!');
+                } catch (e) {
+                    console.error("Error clearing data:", e);
+                    alert("Error clearing data from local storage.");
+                }
+            } else {
+                // User cancelled, do nothing
+                alert("Clear operation cancelled.");
+            }
+        });
+
+        // Add event listener for the Download button
+        document.getElementById('downloadButton').addEventListener('click', function() {
+            // Check if there is any data to download
+            if (recordedResults.length === 0) {
+                alert("No data to download.");
+                return;
+            }
+
+            try {
+                // Function to convert JSON array to CSV string
+                function jsonToCsv(jsonArray) {
+                    // Define header row based on the expected keys in recordedResults
+                    const header = ["lotteryName", "luckyNumbers", "actualResult", "statusLehRoot", "statusBon", "statusLang"];
+                    const csvRows = [header.join(',')]; // Add header row
+
+                    for (const row of jsonArray) {
+                        const values = header.map(h => {
+                            let value = row[h] !== undefined ? row[h] : ''; // Handle missing keys gracefully
+                            // Special handling for luckyNumbers (array) - join with space
+                            if (h === 'luckyNumbers' && Array.isArray(value)) {
+                                value = value.join(' ');
+                            }
+                            // Remove any HTML tags from status fields before including in CSV
+                            if (h.startsWith('status') && typeof value === 'string') {
+                                const tempDiv = document.createElement('div');
+                                tempDiv.innerHTML = value;
+                                value = tempDiv.textContent || tempDiv.innerText || '';
+                            }
+
+
+                            const escaped = ('' + value).replace(/"/g, '""'); // Escape double quotes
+                            return `"${escaped}"`; // Enclose all values in double quotes
+                        });
+                        csvRows.push(values.join(','));
+                    }
+
+                    return csvRows.join('\n');
+                }
+
+                const csvData = jsonToCsv(recordedResults);
+
+                // Create a Blob with the CSV data and specify the MIME type
+                const blob = new Blob([csvData], { type: 'text/csv' });
+
+                // Create a download link
+                const downloadLink = document.createElement('a');
+
+                // Set the download link's href to a URL created from the blob
+                downloadLink.href = URL.createObjectURL(blob);
+
+                // Set the download attribute to specify the filename with .csv extension
+                downloadLink.download = 'lottery_results.csv';
+
+                // Append the link to the body (it doesn't need to be visible)
+                document.body.appendChild(downloadLink);
+
+                // Programmatically click the link to trigger the download
+                downloadLink.click();
+
+                // Clean up by removing the link and revoking the object URL
+                document.body.removeChild(downloadLink);
+                URL.revokeObjectURL(downloadLink.href);
+
+                alert('Data downloaded successfully as CSV!');
+
+            } catch (e) {
+                console.error("Error downloading data:", e);
+                alert("Error downloading data.");
+            }
+        });
+
+
+    </script>
+</body>
+</html>
